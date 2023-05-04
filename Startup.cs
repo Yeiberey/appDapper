@@ -1,5 +1,8 @@
 ﻿
 
+using appDapper2;
+using System.Data;
+
 namespace webApi
 {
     public class Startup
@@ -15,7 +18,7 @@ namespace webApi
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-
+            services.AddTransient<DbService>(_ =>new DbService(Configuration.GetConnectionString("defaultConnection")));
 
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

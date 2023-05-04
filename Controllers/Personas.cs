@@ -1,3 +1,4 @@
+using appDapper2;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
@@ -11,25 +12,24 @@ namespace webApi.Controllers
     [Route("api/personas")]
     public class PersonasController : ControllerBase
     {
-        public PersonasController(IConfiguration configuration)
+        private readonly DbService conn;
+        public PersonasController(DbService connection)
         {
-            this.Configuration = configuration;
+            this.conn = connection;
         }
-        public IConfiguration Configuration { get; }
         [HttpGet]
         public IActionResult get()
         {
-            using (IDbConnection db = new SqlConnection(Configuration.GetConnectionString("defaultConnection")))
+            using (IDbConnection db = conn.Connection)
             {
-                db.Open();
                 var personas = db.Query<Persona>(
-                    "SELECT " +
+                    "SELECT TOP 100 " +
                     "p.PersonaId,p.NoIdentificacion, p.PrimerNombre, p.SegundoNombre, p.PrimerApellido, p.SegundoApellido, p.Direccion, p.Telefono1, " +
                     "d.Descripcion AS Departamento, c.Descripcion AS Ciudad, b.Descripcion AS Barrio " +
                     "FROM personas p " +
                     "LEFT JOIN departamentos d ON p.DepartamentoId = d.DepartamentoId " +
                     "LEFT JOIN Ciudad c ON p.CiudadId = c.CiudadId " +
-                    "LEFT JOIN Barrios b ON p.BarrioId = b.BarrioId").ToList();
+                    "INNER JOIN Barrios b ON p.BarrioId = b.BarrioId").ToList();
                 return Ok(personas);
             }
         }
