@@ -18,11 +18,7 @@ namespace webApi
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            services.AddTransient<DbService>(_ => {
-                DbService inst = new DbService(Configuration.GetConnectionString("defaultConnection"));
-                var _t = inst.Connection;
-                return inst;
-                });
+            services.AddTransient<DbService>(_ =>  new DbService(Configuration.GetConnectionString("defaultConnection")));
 
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
