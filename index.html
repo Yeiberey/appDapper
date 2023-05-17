@@ -9,12 +9,69 @@
 </head>
 
 <body>
-    <input type="name" class="nameUser">
-    <input type="button" value="send">
+    <div style="margin: 10px 0;">
+        <input type="name" id="nameUser" value="hilda">
+        <input type="button" value="log in" id="logIn">
+
+    </div>
+    <div style="margin: 10px 0;">
+
+        <input type="text" id="noDocumento" value="A0130110000005051">
+        <input type="button" value="send" id="send">
+    </div>
+    <label id="result"></label>
     <script>
-        fetch('https://localhost:7134/api/facturas/A0130110000005051')
-            .then(res => res.json())
-            .then(res => console.log(res))
+        const txtName = document.getElementById('nameUser')
+        const bttnLogIn = document.getElementById('logIn')
+        const txtNoDocumento = document.getElementById('noDocumento')
+        const bttnSend = document.getElementById('send')
+        const lblResult = document.getElementById('result')
+        let token;
+        bttnSend.addEventListener('click', () => {
+            fetch(`https://localhost:7134/api/facturas/${txtNoDocumento.value}?token=${token}`)
+                .then(res => res.json())
+                .then(res => {
+                    if (res) {
+
+                        let result = "";
+                        for (let key in res) {
+                            const value = res[key];
+                            if (value?.length) {
+
+                                result += `${key}: ${typeof value === "object" ? "<br><br>" + value.map(e => (JSON.stringify(e) + "<br><br>").replace(/"/g, "").replace(/:/g, "= ").replace(/,/g, "<br>").replace(/[{]/g, "").replace(/[}]/g, "")) : value}<br>`
+                            }
+                        }
+                        lblResult.innerHTML = result
+                    }
+                })
+        })
+        bttnLogIn.addEventListener('click', () => {
+            if (bttnLogIn.value === "log in") {
+
+                fetch('https://localhost:7134/api/generate-token', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: txtName.value
+                    })
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        token = res.token
+                        console.log(token)
+                        bttnLogIn.value = "log out"
+                    })
+
+            } else {
+                bttnLogIn.value = "log in"
+                token = undefined;
+
+            }
+
+        })
     </script>
 </body>
 

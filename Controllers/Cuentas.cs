@@ -61,7 +61,7 @@ namespace appDapper.Controllers
                 string token = _jwtService.GenerateToken(userId);
 
                 // devolver
-                return Ok(new { Token = token });
+                return Ok(new { Token = token});
             }
             else
             {

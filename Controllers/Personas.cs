@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Data.SqlClient;
 using appDapper.Controllers.Entidades;
+using Microsoft.AspNetCore.Authorization;
 
 namespace webApi.Controllers
 {
@@ -18,6 +19,7 @@ namespace webApi.Controllers
             this.conn = connection;
         }
         [HttpGet]
+        [Authorize]
         public IActionResult get()
         {
             using (IDbConnection db = conn.Connection)

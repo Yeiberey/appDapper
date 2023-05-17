@@ -5,6 +5,7 @@ using System.Data;
 using appDapper.Controllers.Entidades;
 using appDapper;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace webApi.Controllers
 {
@@ -23,10 +24,12 @@ namespace webApi.Controllers
             this._jwtService = jwtService;
         }
         [HttpGet("{noDocumento}")]
-        public IActionResult get(string noDocumento)
+
+        public IActionResult get(string noDocumento, string token)
         {
 
-            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            /*var authorizationHeader = Request.Headers["Authorization"];
+            var token = authorizationHeader.ToString().Replace("Bearer ", "");*/
 
             var claimsPrincipal = _jwtService.ValidateToken(token);
             if (claimsPrincipal == null)
@@ -34,7 +37,7 @@ namespace webApi.Controllers
                 return Unauthorized();
             }
 
-            // Si llegamos hasta aquí, el token es válido
+            //token es válido
 
             using (IDbConnection db = conn.Connection)
             {

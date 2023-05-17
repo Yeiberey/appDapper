@@ -10,12 +10,10 @@ namespace appDapper
     {
 
         private readonly string _secretKey;
-        private readonly string _issuer;
 
-        public JWTService(string secretKey, string issuer)
+        public JWTService(IConfiguration configuration)
         {
-            _secretKey = secretKey;
-            _issuer = issuer;
+            _secretKey = configuration["Jwt:SecretKey"];
         }
 
         public string GenerateToken(string userId)
@@ -30,7 +28,7 @@ namespace appDapper
                 new Claim(ClaimTypes.NameIdentifier, userId)
             }),
                 Expires = DateTime.UtcNow.AddDays(7),
-                Issuer = _issuer,
+                Issuer = null,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
@@ -45,10 +43,9 @@ namespace appDapper
 
             var validationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = true,
+                ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = _issuer,
                 IssuerSigningKey = new SymmetricSecurityKey(key)
             };
 
