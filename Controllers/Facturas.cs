@@ -2,8 +2,9 @@ using appDapper2;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
-using System.Data.SqlClient;
 using appDapper.Controllers.Entidades;
+using appDapper;
+using System.Security.Claims;
 
 namespace webApi.Controllers
 {
@@ -12,14 +13,29 @@ namespace webApi.Controllers
     [Route("api/facturas")]
     public class FacturasController : ControllerBase
     {
+        // Inyecta JwtService en tu controlador o servicio
+        private readonly JWTService _jwtService;
+
         private readonly DbService conn;
-        public FacturasController(DbService connection)
+        public FacturasController(DbService connection, JWTService jwtService)
         {
             this.conn = connection;
+            this._jwtService = jwtService;
         }
         [HttpGet("{noDocumento}")]
         public IActionResult get(string noDocumento)
         {
+
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            var claimsPrincipal = _jwtService.ValidateToken(token);
+            if (claimsPrincipal == null)
+            {
+                return Unauthorized();
+            }
+
+            // Si llegamos hasta aquí, el token es válido
+
             using (IDbConnection db = conn.Connection)
             {
                 var factura = db.QueryFirstOrDefault<Factura>(
