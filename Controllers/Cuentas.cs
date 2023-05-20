@@ -22,7 +22,6 @@ namespace appDapper.Controllers
         {
             using (IDbConnection db = conn.Connection)
             {
-                // Realiza la consulta para verificar las credenciales en la base de datos utilizando Dapper
                 string query = "SELECT SalidaId FROM SalidasDeMercanciaTercero WHERE PrimerNombre = @Username";
                 var parameters = new { Username = username/*, Password = password */};
                 string userId = db.QueryFirstOrDefault<string>(query, parameters);
@@ -49,10 +48,6 @@ namespace appDapper.Controllers
         [HttpPost("generate-token")]
         public IActionResult GenerateToken([FromBody] UserCredentials credentials)
         {
-            // Aquí debes realizar la lógica de autenticación y validación de las credenciales del usuario.
-            // Si las credenciales son válidas, puedes generar el token JWT.
-
-            // Por ejemplo, supongamos que verificamos las credenciales y obtenemos el ID del usuario autenticado.
 
             string userId = new User(conn).Authenticate(credentials.Username/*, credentials.Password*/);
             if (userId != null)

@@ -2,6 +2,7 @@
 {
     public class Factura
     {
+        public string NoDocumento { get; set; }
         public string NoIdentificacion { get; set; }
         public string NombreCompleto { get; set; }
         public string PrimerNombre { get; set; }

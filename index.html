@@ -16,7 +16,7 @@
     </div>
     <div style="margin: 10px 0;">
 
-        <input type="text" id="noDocumento" value="A0130110000005051">
+        <input type="text" id="noDocumento" value="A0110030000743979">
         <input type="button" value="send" id="send">
     </div>
     <label id="result"></label>
@@ -28,12 +28,39 @@
         const lblResult = document.getElementById('result')
         let token;
         bttnSend.addEventListener('click', () => {
-            fetch(`https://localhost:7134/api/facturas/${txtNoDocumento.value}?token=${token}`)
-                .then(res => res.json())
+
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", "Bearer " + token);
+
+            var requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            fetch(`https://localhost:7134/api/facturas/?type=noDocumento&number=${txtNoDocumento.value}`,
+                requestOptions)
+                .then((res) => {
+                    if (res.ok) {
+                        return res.json()
+                    }
+                })
                 .then(res => {
                     if (res) {
-
                         let result = "";
+                        // result = res.map(e => {
+
+                        //     let text = "";
+                        //     for (let key in e) {
+                        //         const value = e[key];
+                        //         if (value?.length) {
+
+                        //             text += `${key}: ${typeof value === "object" ? "<br><br>" + value.map(e => (JSON.stringify(e) + "<br><br>").replace(/"/g, "").replace(/:/g, "= ").replace(/,/g, "<br>").replace(/[{]/g, "").replace(/[}]/g, "")) : value}<br>`
+                        //         }
+                        //     }
+                        //     return text
+                        // })
+
                         for (let key in res) {
                             const value = res[key];
                             if (value?.length) {
@@ -41,7 +68,7 @@
                                 result += `${key}: ${typeof value === "object" ? "<br><br>" + value.map(e => (JSON.stringify(e) + "<br><br>").replace(/"/g, "").replace(/:/g, "= ").replace(/,/g, "<br>").replace(/[{]/g, "").replace(/[}]/g, "")) : value}<br>`
                             }
                         }
-                        lblResult.innerHTML = result
+                        lblResult.innerHTML = result/* JSON.stringify(result) */
                     }
                 })
         })
